@@ -65,8 +65,52 @@ n = ((skew_further/(6*0.1*alpha))* (2*t_val^2+1)*dnorm(t_val))^2
 #  PART A
 #################
 
+R <- 10000
+resamples <- tibble(further = rep(NA, R),
+                    closer = rep(NA, R),
+                    diff = rep(NA, R))
+
+for(i in 1:R){
+  #Making a sample for further
+  curr.resample <- sample(further_data,
+                          size = length(further_data),
+                          replace = T)
+  
+  resamples$further[i] <- mean(curr.resample)/(sd(further_data)/sqrt(length(further_data)))
+  
+  
+  
+  #Making a sample for closer
+  curr.resample <- sample(closer_data,
+                          size = length(closer_data),
+                          replace = T)
+  
+  resamples$closer[i] <- mean(curr.resample)/(sd(closer_data)/sqrt(length(closer_data)))
+  
+  #Making a sample for difference
+  curr.resample <- sample(diff_data,
+                          size = length(diff_data),
+                          replace = T)
+  
+  resamples$diff[i] <- mean(curr.resample)/(sd(diff_data)/sqrt(length(diff_data)))
+}
+
+#################
+#  PART B
+#################
 
 
+
+
+
+#################
+#  PART D
+#################
+
+# Confidence Interval
+resample_further_ci = quantile(resamples$further, c(0.025, 0.975))
+resample_closer_ci = quantile(resamples$closer, c(0.025, 0.975))
+resample_diff_ci = quantile(resamples$diff, c(0.025, 0.975))
 
 
 
