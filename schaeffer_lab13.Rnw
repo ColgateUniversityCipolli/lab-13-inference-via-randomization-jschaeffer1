@@ -43,7 +43,7 @@ library(tidyverse)
 library(e1071)
 library(boot)
 @
-The potential error is $-5.338431*10^{-22}$
+The potential error is $-5.338431*10^{-22}$.
 
 <<size = "scriptsize">>=
 #################
@@ -66,6 +66,15 @@ potential_err = (skew_further/sqrt(n))*((2*t_val^2+1)/6)*dnorm(t_val)
   \item Compute the error for $t$ statistics from -10 to 10 and plot a line
   that shows the error across $t$. Continue to use the skewness and 
   the sample size for the zebra finch further data.
+
+\begin{figure}[H]
+ \begin{center}
+ \includegraphics[scale=0.65]{q1_plot.pdf}
+ \caption{Error Across t}
+ \label{plot1}
+ \end{center}
+ \end{figure}
+
 
 <<size = "scriptsize">>=
 #################
@@ -95,13 +104,6 @@ error_plot = ggplot(data=err_tibble, aes(t_vals, err)) +
   xlab("T Value") +
   ylab("Potential Error")
 @
-\begin{figure}[H]
- \begin{center}
- \includegraphics[scale=0.65]{q1_plot.pdf}
- \caption{Error Across t}
- \label{plot1}
- \end{center}
- \end{figure}
 
 
   \item Suppose we wanted to have a tail probability within 10\% of the desired
@@ -111,6 +113,8 @@ error_plot = ggplot(data=err_tibble, aes(t_vals, err)) +
   \[0.10 \alpha  \stackrel{set}{=} \underbrace{\frac{\text{skew}}{\sqrt{n}} \frac{(2t^2+1)}{6} f_Z(t)}_{\textrm{error}},\]
   which yields
   \[ n = \left(\frac{\text{skew}}{6(0.10\alpha)} (2t^2 + 1) f_Z(t)\right)^2.\]
+
+n is calculated as $520.8876$, meaning we would need a sample size of 521 or larger.
 
 <<size = "scriptsize">>=
 #################
@@ -184,6 +188,8 @@ resamples_shifted = resamples |>
   \item Compute the bootstrap $p$-value for each test using the shifted resamples. 
   How do these compare to the $t$-test $p$-values?
   
+  For all three data sets of further, closer, and difference, we received a p value of $p<0.0001$, which is consistent with our t test results from lab 11.
+  
   <<size = "scriptsize">>=
 #################
 #  PART B
@@ -200,6 +206,10 @@ pval_diff
   
     \item What is the 5$^{th}$ percentile of the shifted resamples under the null hypothesis? 
   Note this value approximates $t_{0.05, n-1}$. Compare these values in each case.
+
+For further, we receive a range of $(-1.694, 1.588)$. For closer, we calculated a range of $(-1.598, 1.668)$. For difference, we calculated a range of $(-1.539 1.668)$.
+
+These values are close to the general range of $(-2,2)$ that we consider for a 5$^{th}$ percentile of the t distribution. Due to bootstrapping, however, the distribution is not symmetric and therefore neither is the range.
   
   <<size = "scriptsize">>=
 #################
@@ -292,6 +302,8 @@ for(i in 1:R){
 
   \item Compute the randomization test $p$-value for each test.
   
+  For all three datasets, the p value is $p<0.0001$.
+  
   <<size = "scriptsize">>=
 #################
 #  PART B
@@ -316,12 +328,22 @@ pval_closer = mean(rand$closer <= low) + mean(rand$closer >= high)
 (high<- 0 + delta)   # xbar
 
 pval_diff = mean(rand$diff <= low) + mean(rand$diff >= high)
+
+pval_further
+pval_closer
+pval_diff
 @
   
   \item Compute the randomization confidence interval by iterating over values of $\mu_0$.\\
   \textbf{Hint:} You can ``search" for the lower bound from $Q_1$ and subtracting by 0.0001, 
   and the upper bound using $Q_3$ and increasing by 0.0001. You will continue until you find 
   the first value for which the two-sided $p$-value is greater than or equal to 0.05.
+ 
+ The confidence interval for further is $(-0.2537244, -0.1507244)$
+ \newline
+ The confidence interval for closer is $(0.1172231, 0.1952231)$
+ \newline
+ The confidence interval for difference is $(0.2739475, 0.4469475)$
   
   <<size = "scriptsize">>=
 #################

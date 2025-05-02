@@ -87,6 +87,7 @@ for the the further observations.
   $p$-value when testing $H_0: \mu_X=0; H_a: \mu_X<0$ using the zebra finch further data? 
   
 
+The potential error is $-5.338431*10^{-22}$.
 
 \begin{knitrout}\scriptsize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -117,6 +118,15 @@ for the the further observations.
   \item Compute the error for $t$ statistics from -10 to 10 and plot a line
   that shows the error across $t$. Continue to use the skewness and 
   the sample size for the zebra finch further data.
+
+\begin{figure}[H]
+ \begin{center}
+ \includegraphics[scale=0.65]{q1_plot.pdf}
+ \caption{Error Across t}
+ \label{plot1}
+ \end{center}
+ \end{figure}
+
 
 \begin{knitrout}\scriptsize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -150,13 +160,6 @@ for the the further observations.
 \end{alltt}
 \end{kframe}
 \end{knitrout}
-\begin{figure}[H]
- \begin{center}
- \includegraphics[scale=0.65]{q1_plot.pdf}
- \caption{Error Across t}
- \label{plot1}
- \end{center}
- \end{figure}
 
 
   \item Suppose we wanted to have a tail probability within 10\% of the desired
@@ -166,6 +169,8 @@ for the the further observations.
   \[0.10 \alpha  \stackrel{set}{=} \underbrace{\frac{\text{skew}}{\sqrt{n}} \frac{(2t^2+1)}{6} f_Z(t)}_{\textrm{error}},\]
   which yields
   \[ n = \left(\frac{\text{skew}}{6(0.10\alpha)} (2t^2 + 1) f_Z(t)\right)^2.\]
+
+n is calculated as $520.8876$, meaning we would need a sample size of 521 or larger.
 
 \begin{knitrout}\scriptsize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -247,6 +252,8 @@ sampling distribution of the $T$ statistic:
   \item Compute the bootstrap $p$-value for each test using the shifted resamples. 
   How do these compare to the $t$-test $p$-values?
   
+  For all three data sets of further, closer, and difference, we received a p value of $p<0.0001$, which is consistent with our t test results from lab 11.
+  
 \begin{knitrout}\scriptsize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
@@ -279,6 +286,10 @@ sampling distribution of the $T$ statistic:
   
     \item What is the 5$^{th}$ percentile of the shifted resamples under the null hypothesis? 
   Note this value approximates $t_{0.05, n-1}$. Compare these values in each case.
+
+For further, we receive a range of $(-1.694, 1.588)$. For closer, we calculated a range of $(-1.598, 1.668)$. For difference, we calculated a range of $(-1.539 1.668)$.
+
+These values are close to the general range of $(-2,2)$ that we consider for a 5$^{th}$ percentile of the t distribution. Due to bootstrapping, however, the distribution is not symmetric and therefore neither is the range.
   
 \begin{knitrout}\scriptsize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -294,21 +305,21 @@ sampling distribution of the $T$ statistic:
 \end{alltt}
 \begin{verbatim}
 ##        5%       95% 
-## -1.693523  1.588579
+## -1.631134  1.526979
 \end{verbatim}
 \begin{alltt}
 \hldef{resample_closer_5th}
 \end{alltt}
 \begin{verbatim}
 ##        5%       95% 
-## -1.598645  1.668597
+## -1.581307  1.640890
 \end{verbatim}
 \begin{alltt}
 \hldef{resample_diff_5th}
 \end{alltt}
 \begin{verbatim}
 ##        5%       95% 
-## -1.539859  1.668092
+## -1.561365  1.637883
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -327,21 +338,21 @@ sampling distribution of the $T$ statistic:
 \end{alltt}
 \begin{verbatim}
 ##      2.5%     97.5% 
-## -9.817407 -5.964390
+## -9.788356 -5.969084
 \end{verbatim}
 \begin{alltt}
 \hldef{resample_closer_ci}
 \end{alltt}
 \begin{verbatim}
 ##      2.5%     97.5% 
-##  6.413167 10.280816
+##  6.452629 10.257470
 \end{verbatim}
 \begin{alltt}
 \hldef{resample_diff_ci}
 \end{alltt}
 \begin{verbatim}
 ##      2.5%     97.5% 
-##  6.683322 10.520937
+##  6.680977 10.487867
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -415,6 +426,8 @@ for the closer, further, and difference data, so perform the randomization proce
 
   \item Compute the randomization test $p$-value for each test.
   
+  For all three datasets, the p value is $p<0.0001$.
+  
 \begin{knitrout}\scriptsize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
@@ -483,7 +496,24 @@ for the closer, further, and difference data, so perform the randomization proce
 \end{verbatim}
 \begin{alltt}
 \hldef{pval_diff} \hlkwb{=} \hlkwd{mean}\hldef{(rand}\hlopt{$}\hldef{diff} \hlopt{<=} \hldef{low)} \hlopt{+} \hlkwd{mean}\hldef{(rand}\hlopt{$}\hldef{diff} \hlopt{>=} \hldef{high)}
+
+\hldef{pval_further}
 \end{alltt}
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+\begin{alltt}
+\hldef{pval_closer}
+\end{alltt}
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+\begin{alltt}
+\hldef{pval_diff}
+\end{alltt}
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
 \end{kframe}
 \end{knitrout}
   
@@ -491,6 +521,12 @@ for the closer, further, and difference data, so perform the randomization proce
   \textbf{Hint:} You can ``search" for the lower bound from $Q_1$ and subtracting by 0.0001, 
   and the upper bound using $Q_3$ and increasing by 0.0001. You will continue until you find 
   the first value for which the two-sided $p$-value is greater than or equal to 0.05.
+ 
+ The confidence interval for further is $(-0.2537244, -0.1507244)$
+ \newline
+ The confidence interval for closer is $(0.1172231, 0.1952231)$
+ \newline
+ The confidence interval for difference is $(0.2739475, 0.4469475)$
   
 \begin{knitrout}\scriptsize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -728,19 +764,19 @@ for the closer, further, and difference data, so perform the randomization proce
 \hldef{further_ci}
 \end{alltt}
 \begin{verbatim}
-## [1] -0.2587244 -0.1497244
+## [1] -0.2577244 -0.1507244
 \end{verbatim}
 \begin{alltt}
 \hldef{closer_ci}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.1182231 0.1972231
+## [1] 0.1182231 0.1952231
 \end{verbatim}
 \begin{alltt}
 \hldef{diff_ci}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.2709475 0.4459475
+## [1] 0.2719475 0.4429475
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
