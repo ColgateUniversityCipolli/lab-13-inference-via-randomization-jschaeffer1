@@ -1,0 +1,776 @@
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{xcolor}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlsng}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hldef}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage[margin=1.0in]{geometry} % To set margins
+\usepackage{amsmath}  % This allows me to use the align functionality.
+                      % If you find yourself trying to replicate
+                      % something you found online, ensure you're
+                      % loading the necessary packages!
+\usepackage{amsfonts} % Math font
+\usepackage{fancyvrb}
+\usepackage{hyperref} % For including hyperlinks
+\usepackage[shortlabels]{enumitem}% For enumerated lists with labels specified
+                                  % We had to run tlmgr_install("enumitem") in R
+\usepackage{float}    % For telling R where to put a table/figure
+\usepackage{natbib}        %For the bibliography
+\bibliographystyle{apalike}%For the bibliography
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+
+\begin{enumerate}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Question 1
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item When conducting the work of Lab 11, we conducted the test that uses the
+Central Limit Theorem even though the sample size was ``small" (i.e., $n<30$).
+It turns out, that how ``far off" the $t$-test is can be computed using
+a first-order Edgeworth approximation for the error. Below, we will do this 
+for the the further observations.
+\begin{enumerate}
+  \item \cite{Boos00} note that 
+  \begin{align*}
+    P(T \leq t) \approx F_Z(t) + \underbrace{\frac{\text{skew}}{\sqrt{n}} \frac{(2t^2+1)}{6} f_Z(t)}_{\textrm{error}},
+  \end{align*}
+  where $f_Z(\cdot)$ and $F_Z(\cdot)$ are the Gaussian PDF and CDF and skew is the
+  skewness of the data. What is the potential error in the computation of the 
+  $p$-value when testing $H_0: \mu_X=0; H_a: \mu_X<0$ using the zebra finch further data? 
+  
+
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{#################}
+\hlcom{#  PART A   }
+\hlcom{#################}
+\hlcom{#initializing data}
+\hldef{finch_data} \hlkwb{=} \hlkwd{read_csv}\hldef{(}\hlsng{"zebrafinches.csv"}\hldef{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Rows: 25 Columns: 3\\\#\# -- Column specification --------------------------------------------------------\\\#\# Delimiter: "{},"{}\\\#\# dbl (3): closer, further, diff\\\#\# \\\#\# i Use `spec()` to retrieve the full column specification for this data.\\\#\# i Specify the column types or set `show\_col\_types = FALSE` to quiet this message.}}\begin{alltt}
+\hldef{further_data} \hlkwb{=} \hldef{finch_data}\hlopt{$}\hldef{further}
+\hldef{closer_data} \hlkwb{=} \hldef{finch_data}\hlopt{$}\hldef{closer}
+\hldef{diff_data} \hlkwb{=} \hldef{finch_data}\hlopt{$}\hldef{diff}
+\hldef{skew_further} \hlkwb{=} \hlkwd{skewness}\hldef{(further_data)}
+\hldef{n}\hlkwb{=}\hlkwd{nrow}\hldef{(finch_data)}
+\hlcom{#Calculating t statistic}
+\hldef{t_val} \hlkwb{=} \hlkwd{mean}\hldef{(further_data)}\hlopt{/}\hldef{(}\hlkwd{sd}\hldef{(further_data)}\hlopt{/}\hlkwd{sqrt}\hldef{(n))}
+
+\hlcom{#Caculating potential error}
+\hldef{potential_err} \hlkwb{=} \hldef{(skew_further}\hlopt{/}\hlkwd{sqrt}\hldef{(n))}\hlopt{*}\hldef{((}\hlnum{2}\hlopt{*}\hldef{t_val}\hlopt{^}\hlnum{2}\hlopt{+}\hlnum{1}\hldef{)}\hlopt{/}\hlnum{6}\hldef{)}\hlopt{*}\hlkwd{dnorm}\hldef{(t_val)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+  \item Compute the error for $t$ statistics from -10 to 10 and plot a line
+  that shows the error across $t$. Continue to use the skewness and 
+  the sample size for the zebra finch further data.
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{#################}
+\hlcom{#  PART B}
+\hlcom{#################}
+\hlcom{#Initializing}
+\hldef{t_vals} \hlkwb{=} \hlkwd{seq}\hldef{(}\hlkwc{from} \hldef{=} \hlopt{-}\hlnum{10}\hldef{,} \hlkwc{to} \hldef{=} \hlnum{10}\hldef{,} \hlkwc{by} \hldef{=} \hlnum{0.01}\hldef{)}
+\hldef{R} \hlkwb{=} \hlkwd{length}\hldef{(t_vals)}
+\hldef{err_tibble} \hlkwb{=} \hlkwd{tibble}\hldef{(}\hlkwc{err}\hldef{=}\hlkwd{rep}\hldef{(}\hlnum{NA}\hldef{,R))}
+
+\hlcom{#Looping over each t value}
+\hlkwa{for} \hldef{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hldef{R)\{}
+  \hldef{t_val} \hlkwb{=} \hldef{t_vals[i]}
+  \hlcom{#Calculating potential error}
+  \hldef{potential_err} \hlkwb{=} \hldef{(skew_further}\hlopt{/}\hlkwd{sqrt}\hldef{(n))}\hlopt{*}\hldef{((}\hlnum{2}\hlopt{*}\hldef{t_val}\hlopt{^}\hlnum{2}\hlopt{+}\hlnum{1}\hldef{)}\hlopt{/}\hlnum{6}\hldef{)}\hlopt{*}\hlkwd{dnorm}\hldef{(t_val)}
+
+  \hlcom{#Adding error to tibble}
+  \hldef{err_tibble}\hlopt{$}\hldef{err[i]} \hlkwb{=} \hldef{potential_err}
+\hldef{\}}
+\hlcom{#view(err_tibble)}
+
+\hlcom{#Making plot of values}
+\hldef{error_plot} \hlkwb{=} \hlkwd{ggplot}\hldef{(}\hlkwc{data}\hldef{=err_tibble,} \hlkwd{aes}\hldef{(t_vals, err))} \hlopt{+}
+  \hlkwd{geom_line}\hldef{()} \hlopt{+}
+  \hlkwd{theme_bw}\hldef{()} \hlopt{+}
+  \hlkwd{geom_hline}\hldef{(}\hlkwc{yintercept} \hldef{=} \hlnum{0}\hldef{)} \hlopt{+}
+  \hlkwd{xlab}\hldef{(}\hlsng{"T Value"}\hldef{)} \hlopt{+}
+  \hlkwd{ylab}\hldef{(}\hlsng{"Potential Error"}\hldef{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+\begin{figure}[H]
+ \begin{center}
+ \includegraphics[scale=0.65]{q1_plot.pdf}
+ \caption{Error Across t}
+ \label{plot1}
+ \end{center}
+ \end{figure}
+
+
+  \item Suppose we wanted to have a tail probability within 10\% of the desired
+  $\alpha=0.05$. Recall we did a left-tailed test using the further data.
+  How large of a sample size would we need? That is, we need
+  to solve the error formula equal to 10\% of the desired left-tail probability:
+  \[0.10 \alpha  \stackrel{set}{=} \underbrace{\frac{\text{skew}}{\sqrt{n}} \frac{(2t^2+1)}{6} f_Z(t)}_{\textrm{error}},\]
+  which yields
+  \[ n = \left(\frac{\text{skew}}{6(0.10\alpha)} (2t^2 + 1) f_Z(t)\right)^2.\]
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{#################}
+\hlcom{#  PART C}
+\hlcom{#################}
+\hldef{alpha} \hlkwb{=} \hlnum{0.05}
+\hldef{t_val} \hlkwb{=} \hlkwd{qnorm}\hldef{(alpha)}
+\hldef{n} \hlkwb{=} \hldef{((skew_further}\hlopt{/}\hldef{(}\hlnum{6}\hlopt{*}\hlnum{0.1}\hlopt{*}\hldef{alpha))}\hlopt{*} \hldef{(}\hlnum{2}\hlopt{*}\hldef{t_val}\hlopt{^}\hlnum{2}\hlopt{+}\hlnum{1}\hldef{)}\hlopt{*}\hlkwd{dnorm}\hldef{(t_val))}\hlopt{^}\hlnum{2}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+  
+\end{enumerate}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Question 3
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item Complete the following steps to revisit the analyses from lab 11 using the
+bootstrap procedure.
+\begin{enumerate}
+\item Now, consider the zebra finch data. We do not know the generating distributions
+for the closer, further, and difference data, so perform resampling to approximate the 
+sampling distribution of the $T$ statistic:
+  \[T = \frac{\bar{x}_r - 0}{s/\sqrt{n}},\]
+  where $\bar{x}_r$ is the mean computed on the r$^{th}$ resample and $s$ is the
+  sample standard deviation from the original samples. At the end, create an
+  object called \texttt{resamples.null.closer}, for example, and store the 
+  resamples shifted to ensure they are consistent with the null hypotheses at the average 
+  (i.e., here ensure the shifted resamples are 0 on average, corresponding
+  to $t=0$, for each case). 
+  
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hldef{R} \hlkwb{<-} \hlnum{10000}
+\hldef{resamples} \hlkwb{<-} \hlkwd{tibble}\hldef{(}\hlkwc{further} \hldef{=} \hlkwd{rep}\hldef{(}\hlnum{NA}\hldef{, R),}
+                    \hlkwc{closer} \hldef{=} \hlkwd{rep}\hldef{(}\hlnum{NA}\hldef{, R),}
+                    \hlkwc{diff} \hldef{=} \hlkwd{rep}\hldef{(}\hlnum{NA}\hldef{, R))}
+
+\hlkwa{for}\hldef{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hldef{R)\{}
+  \hlcom{#Making a sample for further}
+  \hldef{curr.resample} \hlkwb{<-} \hlkwd{sample}\hldef{(further_data,}
+                          \hlkwc{size} \hldef{=} \hlkwd{length}\hldef{(further_data),}
+                          \hlkwc{replace} \hldef{= T)}
+
+  \hldef{resamples}\hlopt{$}\hldef{further[i]} \hlkwb{<-} \hlkwd{mean}\hldef{(curr.resample)}\hlopt{/}\hldef{(}\hlkwd{sd}\hldef{(further_data)}\hlopt{/}\hlkwd{sqrt}\hldef{(}\hlkwd{length}\hldef{(further_data)))}
+
+
+
+  \hlcom{#Making a sample for closer}
+  \hldef{curr.resample} \hlkwb{<-} \hlkwd{sample}\hldef{(closer_data,}
+                          \hlkwc{size} \hldef{=} \hlkwd{length}\hldef{(closer_data),}
+                          \hlkwc{replace} \hldef{= T)}
+
+  \hldef{resamples}\hlopt{$}\hldef{closer[i]} \hlkwb{<-} \hlkwd{mean}\hldef{(curr.resample)}\hlopt{/}\hldef{(}\hlkwd{sd}\hldef{(closer_data)}\hlopt{/}\hlkwd{sqrt}\hldef{(}\hlkwd{length}\hldef{(closer_data)))}
+
+  \hlcom{#Making a sample for difference}
+  \hldef{curr.resample} \hlkwb{<-} \hlkwd{sample}\hldef{(diff_data,}
+                          \hlkwc{size} \hldef{=} \hlkwd{length}\hldef{(diff_data),}
+                          \hlkwc{replace} \hldef{= T)}
+
+  \hldef{resamples}\hlopt{$}\hldef{diff[i]} \hlkwb{<-} \hlkwd{mean}\hldef{(curr.resample)}\hlopt{/}\hldef{(}\hlkwd{sd}\hldef{(diff_data)}\hlopt{/}\hlkwd{sqrt}\hldef{(}\hlkwd{length}\hldef{(diff_data)))}
+\hldef{\}}
+\hldef{resamples_shifted} \hlkwb{=} \hldef{resamples |>}
+  \hlkwd{mutate}\hldef{(}\hlkwc{further} \hldef{= further}\hlopt{-}\hlkwd{mean}\hldef{(further_data)}\hlopt{/}\hldef{(}\hlkwd{sd}\hldef{(further_data)}\hlopt{/}\hlkwd{sqrt}\hldef{(}\hlnum{25}\hldef{))) |>}
+  \hlkwd{mutate}\hldef{(}\hlkwc{closer} \hldef{= closer}\hlopt{-}\hlkwd{mean}\hldef{(closer_data)}\hlopt{/}\hldef{(}\hlkwd{sd}\hldef{(closer_data)}\hlopt{/}\hlkwd{sqrt}\hldef{(}\hlnum{25}\hldef{))) |>}
+  \hlkwd{mutate}\hldef{(}\hlkwc{diff} \hldef{= diff}\hlopt{-}\hlkwd{mean}\hldef{(diff_data)}\hlopt{/}\hldef{(}\hlkwd{sd}\hldef{(diff_data)}\hlopt{/}\hlkwd{sqrt}\hldef{(}\hlnum{25}\hldef{)))}
+
+\hlcom{#view(resamples)}
+\hlcom{#view(resamples_shifted)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+  \item Compute the bootstrap $p$-value for each test using the shifted resamples. 
+  How do these compare to the $t$-test $p$-values?
+  
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{#################}
+\hlcom{#  PART B}
+\hlcom{#################}
+\hldef{pval_further} \hlkwb{=} \hldef{(}\hlkwd{mean}\hldef{(resamples_shifted}\hlopt{$}\hldef{further} \hlopt{<=} \hlkwd{mean}\hldef{(resamples}\hlopt{$}\hldef{further)))}\hlopt{/}\hldef{R}
+\hldef{pval_closer} \hlkwb{=} \hldef{(}\hlkwd{mean}\hldef{(resamples_shifted}\hlopt{$}\hldef{closer} \hlopt{>=} \hlkwd{mean}\hldef{(resamples}\hlopt{$}\hldef{diff)))}\hlopt{/}\hldef{R}
+\hldef{pval_diff} \hlkwb{=} \hldef{(}\hlkwd{mean}\hldef{(resamples_shifted}\hlopt{$}\hldef{diff} \hlopt{>=} \hlkwd{mean}\hldef{(resamples}\hlopt{$}\hldef{diff)))}\hlopt{/}\hldef{R}
+
+\hldef{pval_further}
+\end{alltt}
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+\begin{alltt}
+\hldef{pval_closer}
+\end{alltt}
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+\begin{alltt}
+\hldef{pval_diff}
+\end{alltt}
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+  
+    \item What is the 5$^{th}$ percentile of the shifted resamples under the null hypothesis? 
+  Note this value approximates $t_{0.05, n-1}$. Compare these values in each case.
+  
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{#################}
+\hlcom{#  PART C}
+\hlcom{#################}
+\hldef{resample_further_5th} \hlkwb{=} \hlkwd{quantile}\hldef{(resamples_shifted}\hlopt{$}\hldef{further,} \hlkwd{c}\hldef{(}\hlnum{0.05}\hldef{,} \hlnum{0.95}\hldef{))}
+\hldef{resample_closer_5th} \hlkwb{=} \hlkwd{quantile}\hldef{(resamples_shifted}\hlopt{$}\hldef{closer,} \hlkwd{c}\hldef{(}\hlnum{0.05}\hldef{,} \hlnum{0.95}\hldef{))}
+\hldef{resample_diff_5th} \hlkwb{=} \hlkwd{quantile}\hldef{(resamples_shifted}\hlopt{$}\hldef{diff,} \hlkwd{c}\hldef{(}\hlnum{0.05}\hldef{,} \hlnum{0.95}\hldef{))}
+
+\hldef{resample_further_5th}
+\end{alltt}
+\begin{verbatim}
+##        5%       95% 
+## -1.693523  1.588579
+\end{verbatim}
+\begin{alltt}
+\hldef{resample_closer_5th}
+\end{alltt}
+\begin{verbatim}
+##        5%       95% 
+## -1.598645  1.668597
+\end{verbatim}
+\begin{alltt}
+\hldef{resample_diff_5th}
+\end{alltt}
+\begin{verbatim}
+##        5%       95% 
+## -1.539859  1.668092
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+  \item Compute the bootstrap confidence intervals using the resamples. How do these 
+  compare to the $t$-test confidence intervals?
+  
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Confidence Interval}
+\hldef{resample_further_ci} \hlkwb{=} \hlkwd{quantile}\hldef{(resamples}\hlopt{$}\hldef{further,} \hlkwd{c}\hldef{(}\hlnum{0.025}\hldef{,} \hlnum{0.975}\hldef{))}
+\hldef{resample_closer_ci} \hlkwb{=} \hlkwd{quantile}\hldef{(resamples}\hlopt{$}\hldef{closer,} \hlkwd{c}\hldef{(}\hlnum{0.025}\hldef{,} \hlnum{0.975}\hldef{))}
+\hldef{resample_diff_ci} \hlkwb{=} \hlkwd{quantile}\hldef{(resamples}\hlopt{$}\hldef{diff,} \hlkwd{c}\hldef{(}\hlnum{0.025}\hldef{,} \hlnum{0.975}\hldef{))}
+
+\hldef{resample_further_ci}
+\end{alltt}
+\begin{verbatim}
+##      2.5%     97.5% 
+## -9.817407 -5.964390
+\end{verbatim}
+\begin{alltt}
+\hldef{resample_closer_ci}
+\end{alltt}
+\begin{verbatim}
+##      2.5%     97.5% 
+##  6.413167 10.280816
+\end{verbatim}
+\begin{alltt}
+\hldef{resample_diff_ci}
+\end{alltt}
+\begin{verbatim}
+##      2.5%     97.5% 
+##  6.683322 10.520937
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+\end{enumerate}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Question 4
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item Complete the following steps to revisit the analyses from lab 11 using the
+randomization procedure.
+\begin{enumerate}
+\item Now, consider the zebra finch data. We do not know the generating distributions
+for the closer, further, and difference data, so perform the randomization procedure
+
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{#################}
+\hlcom{#  PART A}
+\hlcom{#################}
+\hldef{closer_data} \hlkwb{=} \hldef{finch_data}\hlopt{$}\hldef{closer}
+\hldef{diff_data} \hlkwb{=} \hldef{finch_data}\hlopt{$}\hldef{diff}
+
+\hldef{R} \hlkwb{<-} \hlnum{10000}
+\hldef{rand} \hlkwb{<-} \hlkwd{tibble}\hldef{(}\hlkwc{further} \hldef{=} \hlkwd{rep}\hldef{(}\hlnum{NA}\hldef{, R),}
+               \hlkwc{closer} \hldef{=} \hlkwd{rep}\hldef{(}\hlnum{NA}\hldef{, R),}
+               \hlkwc{diff} \hldef{=} \hlkwd{rep}\hldef{(}\hlnum{NA}\hldef{, R))}
+
+\hlcom{#Randomization for further}
+\hlcom{# PREPROCESSING: shift the data to be mean 0 under H0}
+\hldef{x.shift} \hlkwb{<-} \hldef{further_data} \hlopt{-} \hlnum{0}
+\hlcom{# RANDOMIZE / SHUFFLE}
+\hlkwa{for}\hldef{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hldef{R)\{}
+  \hldef{curr.rand} \hlkwb{<-} \hldef{x.shift} \hlopt{*}
+    \hlkwd{sample}\hldef{(}\hlkwc{x} \hldef{=} \hlkwd{c}\hldef{(}\hlopt{-}\hlnum{1}\hldef{,} \hlnum{1}\hldef{),}
+           \hlkwc{size} \hldef{=} \hlkwd{length}\hldef{(x.shift),}
+           \hlkwc{replace} \hldef{= T)}
+
+  \hldef{rand}\hlopt{$}\hldef{further[i]} \hlkwb{<-} \hlkwd{mean}\hldef{(curr.rand)}
+\hldef{\}}
+
+\hlcom{#Randomization for closer}
+\hldef{x.shift} \hlkwb{<-} \hldef{closer_data} \hlopt{-} \hlnum{0}
+\hlcom{# RANDOMIZE / SHUFFLE}
+\hlkwa{for}\hldef{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hldef{R)\{}
+  \hldef{curr.rand} \hlkwb{<-} \hldef{x.shift} \hlopt{*}
+    \hlkwd{sample}\hldef{(}\hlkwc{x} \hldef{=} \hlkwd{c}\hldef{(}\hlopt{-}\hlnum{1}\hldef{,} \hlnum{1}\hldef{),}
+           \hlkwc{size} \hldef{=} \hlkwd{length}\hldef{(x.shift),}
+           \hlkwc{replace} \hldef{= T)}
+
+  \hldef{rand}\hlopt{$}\hldef{closer[i]} \hlkwb{<-} \hlkwd{mean}\hldef{(curr.rand)}
+\hldef{\}}
+
+
+\hlcom{#Randomization for difference}
+\hldef{x.shift} \hlkwb{<-} \hldef{diff_data} \hlopt{-} \hlnum{0}
+\hlcom{# RANDOMIZE / SHUFFLE}
+\hlkwa{for}\hldef{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hldef{R)\{}
+  \hldef{curr.rand} \hlkwb{<-} \hldef{x.shift} \hlopt{*}
+    \hlkwd{sample}\hldef{(}\hlkwc{x} \hldef{=} \hlkwd{c}\hldef{(}\hlopt{-}\hlnum{1}\hldef{,} \hlnum{1}\hldef{),}
+           \hlkwc{size} \hldef{=} \hlkwd{length}\hldef{(x.shift),}
+           \hlkwc{replace} \hldef{= T)}
+
+  \hldef{rand}\hlopt{$}\hldef{diff[i]} \hlkwb{<-} \hlkwd{mean}\hldef{(curr.rand)}
+\hldef{\}}
+\hlcom{#view(rand)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+  \item Compute the randomization test $p$-value for each test.
+  
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{#################}
+\hlcom{#  PART B}
+\hlcom{#################}
+\hlcom{# p-value for further}
+\hldef{(delta} \hlkwb{<-} \hlkwd{abs}\hldef{(}\hlkwd{mean}\hldef{(further_data)} \hlopt{-} \hlnum{0}\hldef{))}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.2027244
+\end{verbatim}
+\begin{alltt}
+\hldef{(low} \hlkwb{<-} \hlnum{0} \hlopt{-} \hldef{delta)} \hlcom{# mirror}
+\end{alltt}
+\begin{verbatim}
+## [1] -0.2027244
+\end{verbatim}
+\begin{alltt}
+\hldef{(high}\hlkwb{<-} \hlnum{0} \hlopt{+} \hldef{delta)}   \hlcom{# xbar}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.2027244
+\end{verbatim}
+\begin{alltt}
+\hldef{pval_further} \hlkwb{=} \hlkwd{mean}\hldef{(rand}\hlopt{$}\hldef{further} \hlopt{<=} \hldef{low)} \hlopt{+} \hlkwd{mean}\hldef{(rand}\hlopt{$}\hldef{further} \hlopt{>=} \hldef{high)}
+
+\hlcom{# p-value for closer}
+\hldef{(delta} \hlkwb{<-} \hlkwd{abs}\hldef{(}\hlkwd{mean}\hldef{(closer_data)} \hlopt{-} \hlnum{0}\hldef{))}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.1562231
+\end{verbatim}
+\begin{alltt}
+\hldef{(low} \hlkwb{<-} \hlnum{0} \hlopt{-} \hldef{delta)} \hlcom{# mirror}
+\end{alltt}
+\begin{verbatim}
+## [1] -0.1562231
+\end{verbatim}
+\begin{alltt}
+\hldef{(high}\hlkwb{<-} \hlnum{0} \hlopt{+} \hldef{delta)}   \hlcom{# xbar}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.1562231
+\end{verbatim}
+\begin{alltt}
+\hldef{pval_closer} \hlkwb{=} \hlkwd{mean}\hldef{(rand}\hlopt{$}\hldef{closer} \hlopt{<=} \hldef{low)} \hlopt{+} \hlkwd{mean}\hldef{(rand}\hlopt{$}\hldef{closer} \hlopt{>=} \hldef{high)}
+
+\hlcom{# p-value for further}
+\hldef{(delta} \hlkwb{<-} \hlkwd{abs}\hldef{(}\hlkwd{mean}\hldef{(diff_data)} \hlopt{-} \hlnum{0}\hldef{))}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.3589475
+\end{verbatim}
+\begin{alltt}
+\hldef{(low} \hlkwb{<-} \hlnum{0} \hlopt{-} \hldef{delta)} \hlcom{# mirror}
+\end{alltt}
+\begin{verbatim}
+## [1] -0.3589475
+\end{verbatim}
+\begin{alltt}
+\hldef{(high}\hlkwb{<-} \hlnum{0} \hlopt{+} \hldef{delta)}   \hlcom{# xbar}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.3589475
+\end{verbatim}
+\begin{alltt}
+\hldef{pval_diff} \hlkwb{=} \hlkwd{mean}\hldef{(rand}\hlopt{$}\hldef{diff} \hlopt{<=} \hldef{low)} \hlopt{+} \hlkwd{mean}\hldef{(rand}\hlopt{$}\hldef{diff} \hlopt{>=} \hldef{high)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+  
+  \item Compute the randomization confidence interval by iterating over values of $\mu_0$.\\
+  \textbf{Hint:} You can ``search" for the lower bound from $Q_1$ and subtracting by 0.0001, 
+  and the upper bound using $Q_3$ and increasing by 0.0001. You will continue until you find 
+  the first value for which the two-sided $p$-value is greater than or equal to 0.05.
+  
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{#################}
+\hlcom{#  PART C}
+\hlcom{#################}
+\hldef{R} \hlkwb{<-} \hlnum{1000}
+\hldef{mu0.iterate} \hlkwb{<-} \hlnum{0.001}
+\hldef{starting.point} \hlkwb{<-} \hlkwd{mean}\hldef{(further_data)}
+
+\hlcom{#Calculating lower value}
+\hldef{mu.lower} \hlkwb{<-} \hldef{starting.point}
+\hlkwa{repeat}\hldef{\{}
+\hldef{rand} \hlkwb{<-} \hlkwd{tibble}\hldef{(}\hlkwc{xbars} \hldef{=} \hlkwd{rep}\hldef{(}\hlnum{NA}\hldef{, R))}
+
+\hlcom{# PREPROCESSING: shift the data to be mean 0 under H0}
+\hldef{x.shift} \hlkwb{<-} \hldef{further_data} \hlopt{-} \hldef{mu.lower}
+\hlcom{# RANDOMIZE / SHUFFLE}
+\hlkwa{for}\hldef{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hldef{R)\{}
+  \hldef{curr.rand} \hlkwb{<-} \hldef{x.shift} \hlopt{*}
+    \hlkwd{sample}\hldef{(}\hlkwc{x} \hldef{=} \hlkwd{c}\hldef{(}\hlopt{-}\hlnum{1}\hldef{,} \hlnum{1}\hldef{),}
+           \hlkwc{size} \hldef{=} \hlkwd{length}\hldef{(x.shift),}
+           \hlkwc{replace} \hldef{= T)}
+
+  \hldef{rand}\hlopt{$}\hldef{xbars[i]} \hlkwb{<-} \hlkwd{mean}\hldef{(curr.rand)}
+\hldef{\}}
+\hlcom{# Thinking is hard}
+\hldef{rand} \hlkwb{<-} \hldef{rand |>}
+  \hlkwd{mutate}\hldef{(}\hlkwc{xbars} \hldef{= xbars} \hlopt{+} \hldef{mu.lower)} \hlcom{# shifting back}
+
+\hlcom{# p-value }
+\hldef{(delta} \hlkwb{<-} \hlkwd{abs}\hldef{(}\hlkwd{mean}\hldef{(further_data)} \hlopt{-} \hldef{mu.lower))}
+\hldef{(low} \hlkwb{<-} \hldef{mu.lower} \hlopt{-} \hldef{delta)} \hlcom{# mirror}
+\hldef{(high}\hlkwb{<-} \hldef{mu.lower} \hlopt{+} \hldef{delta)}   \hlcom{# xbar}
+\hldef{(p.val} \hlkwb{<-} \hlkwd{mean}\hldef{(rand}\hlopt{$}\hldef{xbars} \hlopt{<=} \hldef{low)} \hlopt{+}
+    \hlkwd{mean}\hldef{(rand}\hlopt{$}\hldef{xbars} \hlopt{>=} \hldef{high))}
+
+\hlkwa{if}\hldef{(p.val} \hlopt{<} \hlnum{0.05}\hldef{)\{}
+  \hlkwa{break}
+\hldef{\}}\hlkwa{else}\hldef{\{}
+  \hldef{mu.lower} \hlkwb{<-} \hldef{mu.lower} \hlopt{-} \hldef{mu0.iterate}
+\hldef{\}}
+\hldef{\}}
+
+\hlcom{#Calculating upper value}
+\hldef{mu.upper} \hlkwb{<-} \hldef{starting.point}
+\hlkwa{repeat}\hldef{\{}
+\hldef{rand} \hlkwb{<-} \hlkwd{tibble}\hldef{(}\hlkwc{xbars} \hldef{=} \hlkwd{rep}\hldef{(}\hlnum{NA}\hldef{, R))}
+
+\hlcom{# PREPROCESSING: shift the data to be mean 0 under H0}
+\hldef{x.shift} \hlkwb{<-} \hldef{further_data} \hlopt{-} \hldef{mu.upper}
+\hlcom{# RANDOMIZE / SHUFFLE}
+\hlkwa{for}\hldef{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hldef{R)\{}
+  \hldef{curr.rand} \hlkwb{<-} \hldef{x.shift} \hlopt{*}
+    \hlkwd{sample}\hldef{(}\hlkwc{x} \hldef{=} \hlkwd{c}\hldef{(}\hlopt{-}\hlnum{1}\hldef{,} \hlnum{1}\hldef{),}
+           \hlkwc{size} \hldef{=} \hlkwd{length}\hldef{(x.shift),}
+           \hlkwc{replace} \hldef{= T)}
+
+  \hldef{rand}\hlopt{$}\hldef{xbars[i]} \hlkwb{<-} \hlkwd{mean}\hldef{(curr.rand)}
+\hldef{\}}
+\hlcom{# Thinking is hard}
+\hldef{rand} \hlkwb{<-} \hldef{rand |>}
+  \hlkwd{mutate}\hldef{(}\hlkwc{xbars} \hldef{= xbars} \hlopt{+} \hldef{mu.upper)} \hlcom{# shifting back}
+
+\hlcom{# p-value }
+\hldef{(delta} \hlkwb{<-} \hlkwd{abs}\hldef{(}\hlkwd{mean}\hldef{(further_data)} \hlopt{-} \hldef{mu.upper))}
+\hldef{(low} \hlkwb{<-} \hldef{mu.upper} \hlopt{-} \hldef{delta)} \hlcom{# mirror}
+\hldef{(high}\hlkwb{<-} \hldef{mu.upper} \hlopt{+} \hldef{delta)}   \hlcom{# xbar}
+\hldef{(p.val} \hlkwb{<-} \hlkwd{mean}\hldef{(rand}\hlopt{$}\hldef{xbars} \hlopt{<=} \hldef{low)} \hlopt{+}
+    \hlkwd{mean}\hldef{(rand}\hlopt{$}\hldef{xbars} \hlopt{>=} \hldef{high))}
+
+\hlkwa{if}\hldef{(p.val} \hlopt{<} \hlnum{0.05}\hldef{)\{}
+  \hlkwa{break}
+\hldef{\}}\hlkwa{else}\hldef{\{}
+  \hldef{mu.upper} \hlkwb{<-} \hldef{mu.upper} \hlopt{+} \hldef{mu0.iterate}
+\hldef{\}}
+\hldef{\}}
+
+\hldef{further_ci} \hlkwb{=} \hlkwd{c}\hldef{(mu.lower, mu.upper)}
+
+
+\hlcom{###################}
+\hlcom{#    CLOSER}
+\hlcom{###################}
+\hldef{starting.point} \hlkwb{<-} \hlkwd{mean}\hldef{(closer_data)}
+
+\hlcom{#Calculating lower value}
+\hldef{mu.lower} \hlkwb{<-} \hldef{starting.point}
+\hlkwa{repeat}\hldef{\{}
+\hldef{rand} \hlkwb{<-} \hlkwd{tibble}\hldef{(}\hlkwc{xbars} \hldef{=} \hlkwd{rep}\hldef{(}\hlnum{NA}\hldef{, R))}
+
+\hlcom{# PREPROCESSING: shift the data to be mean 0 under H0}
+\hldef{x.shift} \hlkwb{<-} \hldef{closer_data} \hlopt{-} \hldef{mu.lower}
+\hlcom{# RANDOMIZE / SHUFFLE}
+\hlkwa{for}\hldef{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hldef{R)\{}
+  \hldef{curr.rand} \hlkwb{<-} \hldef{x.shift} \hlopt{*}
+    \hlkwd{sample}\hldef{(}\hlkwc{x} \hldef{=} \hlkwd{c}\hldef{(}\hlopt{-}\hlnum{1}\hldef{,} \hlnum{1}\hldef{),}
+           \hlkwc{size} \hldef{=} \hlkwd{length}\hldef{(x.shift),}
+           \hlkwc{replace} \hldef{= T)}
+
+  \hldef{rand}\hlopt{$}\hldef{xbars[i]} \hlkwb{<-} \hlkwd{mean}\hldef{(curr.rand)}
+\hldef{\}}
+\hlcom{# Thinking is hard}
+\hldef{rand} \hlkwb{<-} \hldef{rand |>}
+  \hlkwd{mutate}\hldef{(}\hlkwc{xbars} \hldef{= xbars} \hlopt{+} \hldef{mu.lower)} \hlcom{# shifting back}
+
+\hlcom{# p-value }
+\hldef{(delta} \hlkwb{<-} \hlkwd{abs}\hldef{(}\hlkwd{mean}\hldef{(closer_data)} \hlopt{-} \hldef{mu.lower))}
+\hldef{(low} \hlkwb{<-} \hldef{mu.lower} \hlopt{-} \hldef{delta)} \hlcom{# mirror}
+\hldef{(high}\hlkwb{<-} \hldef{mu.lower} \hlopt{+} \hldef{delta)}   \hlcom{# xbar}
+\hldef{(p.val} \hlkwb{<-} \hlkwd{mean}\hldef{(rand}\hlopt{$}\hldef{xbars} \hlopt{<=} \hldef{low)} \hlopt{+}
+    \hlkwd{mean}\hldef{(rand}\hlopt{$}\hldef{xbars} \hlopt{>=} \hldef{high))}
+
+\hlkwa{if}\hldef{(p.val} \hlopt{<} \hlnum{0.05}\hldef{)\{}
+  \hlkwa{break}
+\hldef{\}}\hlkwa{else}\hldef{\{}
+  \hldef{mu.lower} \hlkwb{<-} \hldef{mu.lower} \hlopt{-} \hldef{mu0.iterate}
+\hldef{\}}
+\hldef{\}}
+
+\hlcom{#Calculating upper value}
+\hldef{mu.upper} \hlkwb{<-} \hldef{starting.point}
+\hlkwa{repeat}\hldef{\{}
+\hldef{rand} \hlkwb{<-} \hlkwd{tibble}\hldef{(}\hlkwc{xbars} \hldef{=} \hlkwd{rep}\hldef{(}\hlnum{NA}\hldef{, R))}
+
+\hlcom{# PREPROCESSING: shift the data to be mean 0 under H0}
+\hldef{x.shift} \hlkwb{<-} \hldef{closer_data} \hlopt{-} \hldef{mu.upper}
+\hlcom{# RANDOMIZE / SHUFFLE}
+\hlkwa{for}\hldef{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hldef{R)\{}
+  \hldef{curr.rand} \hlkwb{<-} \hldef{x.shift} \hlopt{*}
+    \hlkwd{sample}\hldef{(}\hlkwc{x} \hldef{=} \hlkwd{c}\hldef{(}\hlopt{-}\hlnum{1}\hldef{,} \hlnum{1}\hldef{),}
+           \hlkwc{size} \hldef{=} \hlkwd{length}\hldef{(x.shift),}
+           \hlkwc{replace} \hldef{= T)}
+
+  \hldef{rand}\hlopt{$}\hldef{xbars[i]} \hlkwb{<-} \hlkwd{mean}\hldef{(curr.rand)}
+\hldef{\}}
+\hlcom{# Thinking is hard}
+\hldef{rand} \hlkwb{<-} \hldef{rand |>}
+  \hlkwd{mutate}\hldef{(}\hlkwc{xbars} \hldef{= xbars} \hlopt{+} \hldef{mu.upper)} \hlcom{# shifting back}
+
+\hlcom{# p-value }
+\hldef{(delta} \hlkwb{<-} \hlkwd{abs}\hldef{(}\hlkwd{mean}\hldef{(closer_data)} \hlopt{-} \hldef{mu.upper))}
+\hldef{(low} \hlkwb{<-} \hldef{mu.upper} \hlopt{-} \hldef{delta)} \hlcom{# mirror}
+\hldef{(high}\hlkwb{<-} \hldef{mu.upper} \hlopt{+} \hldef{delta)}   \hlcom{# xbar}
+\hldef{(p.val} \hlkwb{<-} \hlkwd{mean}\hldef{(rand}\hlopt{$}\hldef{xbars} \hlopt{<=} \hldef{low)} \hlopt{+}
+    \hlkwd{mean}\hldef{(rand}\hlopt{$}\hldef{xbars} \hlopt{>=} \hldef{high))}
+
+\hlkwa{if}\hldef{(p.val} \hlopt{<} \hlnum{0.05}\hldef{)\{}
+  \hlkwa{break}
+\hldef{\}}\hlkwa{else}\hldef{\{}
+  \hldef{mu.upper} \hlkwb{<-} \hldef{mu.upper} \hlopt{+} \hldef{mu0.iterate}
+\hldef{\}}
+\hldef{\}}
+
+\hldef{closer_ci} \hlkwb{=} \hlkwd{c}\hldef{(mu.lower, mu.upper)}
+
+
+
+\hlcom{###################}
+\hlcom{#    DIFFERENCE}
+\hlcom{###################}
+\hldef{starting.point} \hlkwb{<-} \hlkwd{mean}\hldef{(diff_data)}
+
+\hlcom{#Calculating lower value}
+\hldef{mu.lower} \hlkwb{<-} \hldef{starting.point}
+\hlkwa{repeat}\hldef{\{}
+\hldef{rand} \hlkwb{<-} \hlkwd{tibble}\hldef{(}\hlkwc{xbars} \hldef{=} \hlkwd{rep}\hldef{(}\hlnum{NA}\hldef{, R))}
+
+\hlcom{# PREPROCESSING: shift the data to be mean 0 under H0}
+\hldef{x.shift} \hlkwb{<-} \hldef{diff_data} \hlopt{-} \hldef{mu.lower}
+\hlcom{# RANDOMIZE / SHUFFLE}
+\hlkwa{for}\hldef{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hldef{R)\{}
+  \hldef{curr.rand} \hlkwb{<-} \hldef{x.shift} \hlopt{*}
+    \hlkwd{sample}\hldef{(}\hlkwc{x} \hldef{=} \hlkwd{c}\hldef{(}\hlopt{-}\hlnum{1}\hldef{,} \hlnum{1}\hldef{),}
+           \hlkwc{size} \hldef{=} \hlkwd{length}\hldef{(x.shift),}
+           \hlkwc{replace} \hldef{= T)}
+
+  \hldef{rand}\hlopt{$}\hldef{xbars[i]} \hlkwb{<-} \hlkwd{mean}\hldef{(curr.rand)}
+\hldef{\}}
+\hlcom{# Thinking is hard}
+\hldef{rand} \hlkwb{<-} \hldef{rand |>}
+  \hlkwd{mutate}\hldef{(}\hlkwc{xbars} \hldef{= xbars} \hlopt{+} \hldef{mu.lower)} \hlcom{# shifting back}
+
+\hlcom{# p-value }
+\hldef{(delta} \hlkwb{<-} \hlkwd{abs}\hldef{(}\hlkwd{mean}\hldef{(diff_data)} \hlopt{-} \hldef{mu.lower))}
+\hldef{(low} \hlkwb{<-} \hldef{mu.lower} \hlopt{-} \hldef{delta)} \hlcom{# mirror}
+\hldef{(high}\hlkwb{<-} \hldef{mu.lower} \hlopt{+} \hldef{delta)}   \hlcom{# xbar}
+\hldef{(p.val} \hlkwb{<-} \hlkwd{mean}\hldef{(rand}\hlopt{$}\hldef{xbars} \hlopt{<=} \hldef{low)} \hlopt{+}
+    \hlkwd{mean}\hldef{(rand}\hlopt{$}\hldef{xbars} \hlopt{>=} \hldef{high))}
+
+\hlkwa{if}\hldef{(p.val} \hlopt{<} \hlnum{0.05}\hldef{)\{}
+  \hlkwa{break}
+\hldef{\}}\hlkwa{else}\hldef{\{}
+  \hldef{mu.lower} \hlkwb{<-} \hldef{mu.lower} \hlopt{-} \hldef{mu0.iterate}
+\hldef{\}}
+\hldef{\}}
+
+\hlcom{#Calculating upper value}
+\hldef{mu.upper} \hlkwb{<-} \hldef{starting.point}
+\hlkwa{repeat}\hldef{\{}
+\hldef{rand} \hlkwb{<-} \hlkwd{tibble}\hldef{(}\hlkwc{xbars} \hldef{=} \hlkwd{rep}\hldef{(}\hlnum{NA}\hldef{, R))}
+
+\hlcom{# PREPROCESSING: shift the data to be mean 0 under H0}
+\hldef{x.shift} \hlkwb{<-} \hldef{diff_data} \hlopt{-} \hldef{mu.upper}
+\hlcom{# RANDOMIZE / SHUFFLE}
+\hlkwa{for}\hldef{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hldef{R)\{}
+  \hldef{curr.rand} \hlkwb{<-} \hldef{x.shift} \hlopt{*}
+    \hlkwd{sample}\hldef{(}\hlkwc{x} \hldef{=} \hlkwd{c}\hldef{(}\hlopt{-}\hlnum{1}\hldef{,} \hlnum{1}\hldef{),}
+           \hlkwc{size} \hldef{=} \hlkwd{length}\hldef{(x.shift),}
+           \hlkwc{replace} \hldef{= T)}
+
+  \hldef{rand}\hlopt{$}\hldef{xbars[i]} \hlkwb{<-} \hlkwd{mean}\hldef{(curr.rand)}
+\hldef{\}}
+\hlcom{# Thinking is hard}
+\hldef{rand} \hlkwb{<-} \hldef{rand |>}
+  \hlkwd{mutate}\hldef{(}\hlkwc{xbars} \hldef{= xbars} \hlopt{+} \hldef{mu.upper)} \hlcom{# shifting back}
+
+\hlcom{# p-value }
+\hldef{(delta} \hlkwb{<-} \hlkwd{abs}\hldef{(}\hlkwd{mean}\hldef{(diff_data)} \hlopt{-} \hldef{mu.upper))}
+\hldef{(low} \hlkwb{<-} \hldef{mu.upper} \hlopt{-} \hldef{delta)} \hlcom{# mirror}
+\hldef{(high}\hlkwb{<-} \hldef{mu.upper} \hlopt{+} \hldef{delta)}   \hlcom{# xbar}
+\hldef{(p.val} \hlkwb{<-} \hlkwd{mean}\hldef{(rand}\hlopt{$}\hldef{xbars} \hlopt{<=} \hldef{low)} \hlopt{+}
+    \hlkwd{mean}\hldef{(rand}\hlopt{$}\hldef{xbars} \hlopt{>=} \hldef{high))}
+
+\hlkwa{if}\hldef{(p.val} \hlopt{<} \hlnum{0.05}\hldef{)\{}
+  \hlkwa{break}
+\hldef{\}}\hlkwa{else}\hldef{\{}
+  \hldef{mu.upper} \hlkwb{<-} \hldef{mu.upper} \hlopt{+} \hldef{mu0.iterate}
+\hldef{\}}
+\hldef{\}}
+
+\hldef{diff_ci} \hlkwb{=} \hlkwd{c}\hldef{(mu.lower, mu.upper)}
+
+\hldef{further_ci}
+\end{alltt}
+\begin{verbatim}
+## [1] -0.2587244 -0.1497244
+\end{verbatim}
+\begin{alltt}
+\hldef{closer_ci}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.1182231 0.1972231
+\end{verbatim}
+\begin{alltt}
+\hldef{diff_ci}
+\end{alltt}
+\begin{verbatim}
+## [1] 0.2709475 0.4459475
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+  
+\end{enumerate}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Optional Question
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item \textbf{Optional Challenge:} In this lab, you performed resampling to 
+approximate the sampling distribution of the $T$ statistic using
+\[T = \frac{\bar{x}_r - 0}{s/\sqrt{n}}.\]
+I'm curious whether it is better/worse/similar if we computed the statistics
+using the sample standard deviation of the resamples ($s_r$), instead of the 
+original sample ($s$)
+  \[T = \frac{\bar{x}_r - 0}{s_r/\sqrt{n}}.\]
+\begin{enumerate}
+  \item Perform a simulation study to evaluate the Type I error for conducting this
+hypothesis test both ways.
+  \item Using the same test case(s) as part (a), compute bootstrap confidence 
+  intervals and assess their coverage -- how often do we `capture' the parameter
+of interest?
+\end{enumerate}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% End Document
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{enumerate}
+\bibliography{bibliography}
+\end{document}
+
