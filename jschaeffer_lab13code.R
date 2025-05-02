@@ -12,6 +12,8 @@ library(boot)
 #initializing data
 finch_data = read_csv("zebrafinches.csv")
 further_data = finch_data$further
+closer_data = finch_data$closer
+diff_data = finch_data$diff
 skew_further = skewness(further_data)
 n=nrow(finch_data)
 #Calculating t statistic
@@ -94,14 +96,35 @@ for(i in 1:R){
   
   resamples$diff[i] <- mean(curr.resample)/(sd(diff_data)/sqrt(length(diff_data)))
 }
+resamples_shifted = resamples |>
+  mutate(further = further-mean(further_data)/(sd(further_data)/sqrt(25))) |>
+  mutate(closer = closer-mean(closer_data)/(sd(closer_data)/sqrt(25))) |>
+  mutate(diff = diff-mean(diff_data)/(sd(diff_data)/sqrt(25)))
+
+#view(resamples)
+#view(resamples_shifted)
 
 #################
 #  PART B
 #################
+pval_further = (mean(resamples_shifted$further <= mean(resamples$further)))/R
+pval_closer = (mean(resamples_shifted$closer >= mean(resamples$diff)))/R
+pval_diff = (mean(resamples_shifted$diff >= mean(resamples$diff)))/R
 
+pval_further
+pval_closer
+pval_diff
 
+#################
+#  PART C
+#################
+resample_further_5th = quantile(resamples_shifted$further, c(0.05, 0.95))
+resample_closer_5th = quantile(resamples_shifted$closer, c(0.05, 0.95))
+resample_diff_5th = quantile(resamples_shifted$diff, c(0.05, 0.95))
 
-
+resample_further_5th
+resample_closer_5th
+resample_diff_5th
 
 #################
 #  PART D
@@ -112,8 +135,9 @@ resample_further_ci = quantile(resamples$further, c(0.025, 0.975))
 resample_closer_ci = quantile(resamples$closer, c(0.025, 0.975))
 resample_diff_ci = quantile(resamples$diff, c(0.025, 0.975))
 
-
-
+resample_further_ci
+resample_closer_ci
+resample_diff_ci
 
 
 
